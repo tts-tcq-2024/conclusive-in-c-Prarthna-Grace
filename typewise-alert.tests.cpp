@@ -143,3 +143,4 @@ TEST_F(TypewiseAlertTest, MedActiveCooling_ToEmail_TooLowTemperature) {
 TEST_F(TypewiseAlertTest, MedActiveCooling_ToEmail_TooHighTemperature) {
     testAlertForCoolingType(TO_EMAIL, MED_ACTIVE_COOLING, 41, TOO_HIGH);
 }
+
