@@ -11,6 +11,8 @@ BreachType inferBreach(double value, double lowerLimit, double upperLimit) {
   return NORMAL;
 }
 
+#include "typewise-alert.h"
+
 // Functions to get temperature limits for each cooling type
 void setPassiveCoolingLimits(int &lowerLimit, int &upperLimit) {
     lowerLimit = 0;
@@ -30,32 +32,24 @@ void setMedActiveCoolingLimits(int &lowerLimit, int &upperLimit) {
 // Function pointer type for setting limits
 typedef void (*SetLimitsFunc)(int &, int &);
 
-// Function to map CoolingType to corresponding limit-setting function
-SetLimitsFunc getLimitSetter(CoolingType coolingType) {
-    switch (coolingType) {
-        case PASSIVE_COOLING:
-            return setPassiveCoolingLimits;
-        case HI_ACTIVE_COOLING:
-            return setHiActiveCoolingLimits;
-        case MED_ACTIVE_COOLING:
-            return setMedActiveCoolingLimits;
-        default:
-            return nullptr; // Handle unknown cooling type
-    }
-}
+// Array of function pointers for each cooling type
+SetLimitsFunc limitSetters[] = {
+    setPassiveCoolingLimits,    // 0: PASSIVE_COOLING
+    setHiActiveCoolingLimits,   // 1: HI_ACTIVE_COOLING
+    setMedActiveCoolingLimits    // 2: MED_ACTIVE_COOLING
+};
 
 // Main function to determine temperature limits
 void getTemperatureLimits(CoolingType coolingType, int &lowerLimit, int &upperLimit) {
-    SetLimitsFunc setLimits = getLimitSetter(coolingType);
-    
-    if (setLimits) {
-        setLimits(lowerLimit, upperLimit);
+    if (coolingType >= PASSIVE_COOLING && coolingType <= MED_ACTIVE_COOLING) {
+        limitSetters[coolingType](lowerLimit, upperLimit);
     } else {
         // Set defaults or handle unknown cooling type if needed
         lowerLimit = 0;
         upperLimit = 0;
     }
 }
+
 
 BreachType classifyTemperatureBreach(CoolingType coolingType, double temperatureInC) {
     int lowerLimit = 0;
