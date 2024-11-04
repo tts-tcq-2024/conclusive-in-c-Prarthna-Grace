@@ -28,7 +28,7 @@ typedef struct {
 // Updated function signatures
 BreachType classifyTemperatureBreach(CoolingType coolingType, double temperatureInC);
 BreachType inferBreach(double value, double lowerLimit, double upperLimit);
-void getTemperatureLimits(CoolingType coolingType, int* lowerLimit, int* upperLimit); // Use pointers
+void getTemperatureLimits(CoolingType coolingType, int &lowerLimit, int &upperLimit); // Use references
 void checkAndAlert(AlertTarget alertTarget, BatteryCharacter batteryChar, double temperatureInC);
 void sendToController(BreachType breachType);
 void sendToEmail(BreachType breachType);
