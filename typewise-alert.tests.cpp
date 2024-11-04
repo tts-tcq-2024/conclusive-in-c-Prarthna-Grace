@@ -65,9 +65,7 @@ protected:
     }
 };
 
-// Test Cases
-
-// Passive Cooling
+// Test Cases for Passive Cooling
 TEST_F(TypewiseAlertTest, PassiveCooling_ToController_NormalTemperature) {
     testAlertForCoolingType(TO_CONTROLLER, PASSIVE_COOLING, 20, NORMAL);
 }
@@ -92,7 +90,7 @@ TEST_F(TypewiseAlertTest, PassiveCooling_ToEmail_TooHighTemperature) {
     testAlertForCoolingType(TO_EMAIL, PASSIVE_COOLING, 36, TOO_HIGH);
 }
 
-// High Active Cooling
+// Test Cases for High Active Cooling
 TEST_F(TypewiseAlertTest, HiActiveCooling_ToController_NormalTemperature) {
     testAlertForCoolingType(TO_CONTROLLER, HI_ACTIVE_COOLING, 30, NORMAL);
 }
@@ -117,7 +115,7 @@ TEST_F(TypewiseAlertTest, HiActiveCooling_ToEmail_TooHighTemperature) {
     testAlertForCoolingType(TO_EMAIL, HI_ACTIVE_COOLING, 46, TOO_HIGH);
 }
 
-// Medium Active Cooling
+// Test Cases for Medium Active Cooling
 TEST_F(TypewiseAlertTest, MedActiveCooling_ToController_NormalTemperature) {
     testAlertForCoolingType(TO_CONTROLLER, MED_ACTIVE_COOLING, 30, NORMAL);
 }
