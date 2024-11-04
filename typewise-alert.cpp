@@ -11,25 +11,54 @@ BreachType inferBreach(double value, double lowerLimit, double upperLimit) {
   return NORMAL;
 }
 
-BreachType classifyTemperatureBreach(
-    CoolingType coolingType, double temperatureInC) {
-  int lowerLimit = 0;
-  int upperLimit = 0;
-  switch(coolingType) {
-    case PASSIVE_COOLING:
-      lowerLimit = 0;
-      upperLimit = 35;
-      break;
-    case HI_ACTIVE_COOLING:
-      lowerLimit = 0;
-      upperLimit = 45;
-      break;
-    case MED_ACTIVE_COOLING:
-      lowerLimit = 0;
-      upperLimit = 40;
-      break;
-  }
-  return inferBreach(temperatureInC, lowerLimit, upperLimit);
+#include "typewise-alert.h"
+
+// Functions to get temperature limits for each cooling type
+void setPassiveCoolingLimits(int &lowerLimit, int &upperLimit) {
+    lowerLimit = 0;
+    upperLimit = 35;
+}
+
+void setHiActiveCoolingLimits(int &lowerLimit, int &upperLimit) {
+    lowerLimit = 0;
+    upperLimit = 45;
+}
+
+void setMedActiveCoolingLimits(int &lowerLimit, int &upperLimit) {
+    lowerLimit = 0;
+    upperLimit = 40;
+}
+
+// Function pointer type for setting limits
+typedef void (*SetLimitsFunc)(int &, int &);
+
+// Array of function pointers for each cooling type
+SetLimitsFunc limitSetters[] = {
+    setPassiveCoolingLimits,    // 0: PASSIVE_COOLING
+    setHiActiveCoolingLimits,   // 1: HI_ACTIVE_COOLING
+    setMedActiveCoolingLimits    // 2: MED_ACTIVE_COOLING
+};
+
+// Main function to determine temperature limits
+void getTemperatureLimits(CoolingType coolingType, int &lowerLimit, int &upperLimit) {
+    if (coolingType >= PASSIVE_COOLING && coolingType <= MED_ACTIVE_COOLING) {
+        limitSetters[coolingType](lowerLimit, upperLimit);
+    } else {
+        // Set defaults or handle unknown cooling type if needed
+        lowerLimit = 0;
+        upperLimit = 0;
+    }
+}
+
+
+BreachType classifyTemperatureBreach(CoolingType coolingType, double temperatureInC) {
+    int lowerLimit = 0;
+    int upperLimit = 0;
+
+    // Pass by reference correctly
+    getTemperatureLimits(coolingType, lowerLimit, upperLimit);
+
+    return inferBreach(temperatureInC, lowerLimit, upperLimit);
 }
 
 void checkAndAlert(
@@ -49,23 +78,3 @@ void checkAndAlert(
   }
 }
 
-void sendToController(BreachType breachType) {
-  const unsigned short header = 0xfeed;
-  printf("%x : %x\n", header, breachType);
-}
-
-void sendToEmail(BreachType breachType) {
-  const char* recepient = "a.b@c.com";
-  switch(breachType) {
-    case TOO_LOW:
-      printf("To: %s\n", recepient);
-      printf("Hi, the temperature is too low\n");
-      break;
-    case TOO_HIGH:
-      printf("To: %s\n", recepient);
-      printf("Hi, the temperature is too high\n");
-      break;
-    case NORMAL:
-      break;
-  }
-}
