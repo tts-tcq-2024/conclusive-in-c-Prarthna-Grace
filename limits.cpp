@@ -16,3 +16,4 @@ void getTemperatureLimits(CoolingType coolingType, int& lowerLimit, int& upperLi
             break;
     }
 }
+
