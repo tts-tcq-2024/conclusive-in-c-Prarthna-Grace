@@ -12,8 +12,12 @@ BreachType inferBreach(double value, double lowerLimit, double upperLimit) {
 }
 
 BreachType classifyTemperatureBreach(CoolingType coolingType, double temperatureInC) {
-    int lowerLimit, upperLimit;
-    getTemperatureLimits(coolingType, lowerLimit, upperLimit);
+    int lowerLimit = 0;
+    int upperLimit = 0;
+
+    // Pass addresses of lowerLimit and upperLimit
+    getTemperatureLimits(coolingType, &lowerLimit, &upperLimit);
+
     return inferBreach(temperatureInC, lowerLimit, upperLimit);
 }
 
