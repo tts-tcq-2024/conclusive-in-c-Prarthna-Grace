@@ -6,16 +6,15 @@ void sendToController(BreachType breachType) {
   printf("%x : %x\n", header, breachType);
 }
 
-void sendToEmail(BreachType breachType) {
-    const char* recipient = "a.b@c.com";
+#include <stdio.h>
 
-    if (breachType == NORMAL) {
-        return;  // Exit early if there is no breach
-    }
+// Function to get the email recipient
+const char* getEmailRecipient() {
+    return "a.b@c.com";
+}
 
-    printf("To: %s\n", recipient);
-    
-    // Print the corresponding message based on the breach type
+// Function to print the email content based on the breach type
+void printEmailContent(BreachType breachType) {
     switch (breachType) {
         case TOO_LOW:
             printf("Hi, the temperature is too low\n");
@@ -28,4 +27,18 @@ void sendToEmail(BreachType breachType) {
             break;
     }
 }
+
+void sendToEmail(BreachType breachType) {
+    // Exit early if there is no breach
+    if (breachType == NORMAL) {
+        return;
+    }
+
+    const char* recipient = getEmailRecipient();
+    printf("To: %s\n", recipient);
+    
+    // Print the corresponding message based on the breach type
+    printEmailContent(breachType);
+}
+
 
