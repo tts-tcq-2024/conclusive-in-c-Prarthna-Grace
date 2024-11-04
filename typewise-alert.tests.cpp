@@ -1,4 +1,4 @@
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include "typewise-alert.h"
 
 // Define mock variables
@@ -9,30 +9,34 @@ bool isEmailAlertCalled = false;
 
 // Define mock functions
 void mockSendToController(BreachType breachType) {
-  MockControllerBreachType = breachType;
-  isControllerAlertCalled = true;
+    MockControllerBreachType = breachType;
+    isControllerAlertCalled = true;
 }
 
 void mockSendToEmail(BreachType breachType) {
-  MockEmailBreachType = breachType;
-  isEmailAlertCalled = true;
+    MockEmailBreachType = breachType;
+    isEmailAlertCalled = true;
 }
 
-// Redirect function pointers to mock functions
+// Assign mock functions to function pointers
 void (*sendToControllerPtr)(BreachType) = mockSendToController;
 void (*sendToEmailPtr)(BreachType) = mockSendToEmail;
 
 // Reset function for mock variables
 void resetMocks() {
-  isControllerAlertCalled = false;
-  isEmailAlertCalled = false;
-  MockControllerBreachType = NORMAL;
-  MockEmailBreachType = NORMAL;
+    isControllerAlertCalled = false;
+    isEmailAlertCalled = false;
+    MockControllerBreachType = NORMAL;
+    MockEmailBreachType = NORMAL;
 }
 
 // Test fixture class
 class TypewiseAlertTest : public ::testing::Test {
 protected:
+    void SetUp() override {
+        resetMocks();
+    }
+
     void testAlertForCoolingType(AlertTarget alertTarget, CoolingType coolingType, double temperatureInC, BreachType expectedBreach) {
         BatteryCharacter batteryChar = {coolingType, "BrandX"};
         testing::internal::CaptureStdout();
@@ -47,98 +51,92 @@ protected:
     }
 
     void validateControllerOutput(BreachType expectedBreach, const std::string& output) {
-        const unsigned short expectedHeader = 0xfeed;
-        std::string expectedOutput = "";
-        if (expectedBreach == TOO_LOW) {
-            expectedOutput = "feed : 1\n";
-        } else if (expectedBreach == TOO_HIGH) {
-            expectedOutput = "feed : 2\n";
-        }else {
-            expectedOutput = "feed : 0\n";
-        }
+        std::string expectedOutput = (expectedBreach == TOO_LOW) ? "feed : 1\n" :
+                                     (expectedBreach == TOO_HIGH) ? "feed : 2\n" :
+                                     "feed : 0\n";
         ASSERT_EQ(output, expectedOutput);
     }
 
     void validateEmailOutput(BreachType expectedBreach, const std::string& output) {
-        const char* recipient = "a.b@c.com";
-        std::string expectedOutput = "";
-        if (expectedBreach == TOO_LOW) {
-            expectedOutput = "To: a.b@c.com\nHi, the temperature is too low\n";
-        } else if (expectedBreach == TOO_HIGH) {
-            expectedOutput = "To: a.b@c.com\nHi, the temperature is too high\n";
-        } // No action required for NORMAL; expectedOutput remains empty.
+        std::string expectedOutput = (expectedBreach == TOO_LOW) ? "To: a.b@c.com\nHi, the temperature is too low\n" :
+                                     (expectedBreach == TOO_HIGH) ? "To: a.b@c.com\nHi, the temperature is too high\n" :
+                                     "";
         ASSERT_EQ(output, expectedOutput);
     }
 };
-// Test Cases
-TEST_F(TypewiseAlertTest, PassiveCooling_ToController_WhenTemperatureIsNormal_ShouldReturnNormal) {
+
+// Test Cases for Passive Cooling
+TEST_F(TypewiseAlertTest, PassiveCooling_ToController_NormalTemperature) {
     testAlertForCoolingType(TO_CONTROLLER, PASSIVE_COOLING, 20, NORMAL);
 }
 
-TEST_F(TypewiseAlertTest, PassiveCooling_ToController_WhenTemperatureIsTooLow_ShouldReturnTooLow) {
+TEST_F(TypewiseAlertTest, PassiveCooling_ToController_TooLowTemperature) {
     testAlertForCoolingType(TO_CONTROLLER, PASSIVE_COOLING, -1, TOO_LOW);
 }
 
-TEST_F(TypewiseAlertTest, PassiveCooling_ToController_WhenTemperatureIsTooHigh_ShouldReturnTooHigh) {
+TEST_F(TypewiseAlertTest, PassiveCooling_ToController_TooHighTemperature) {
     testAlertForCoolingType(TO_CONTROLLER, PASSIVE_COOLING, 36, TOO_HIGH);
 }
 
-TEST_F(TypewiseAlertTest, HiActiveCooling_ToController_WhenTemperatureIsNormal_ShouldReturnNormal) {
-    testAlertForCoolingType(TO_CONTROLLER, HI_ACTIVE_COOLING, 30, NORMAL);
-}
-
-TEST_F(TypewiseAlertTest, HiActiveCooling_ToController_WhenTemperatureIsTooLow_ShouldReturnTooLow) {
-    testAlertForCoolingType(TO_CONTROLLER, HI_ACTIVE_COOLING, -1, TOO_LOW);
-}
-
-TEST_F(TypewiseAlertTest, HiActiveCooling_ToController_WhenTemperatureIsTooHigh_ShouldReturnTooHigh) {
-    testAlertForCoolingType(TO_CONTROLLER, HI_ACTIVE_COOLING, 46, TOO_HIGH);
-}
-
-TEST_F(TypewiseAlertTest, MedActiveCooling_ToController_WhenTemperatureIsNormal_ShouldReturnNormal) {
-    testAlertForCoolingType(TO_CONTROLLER, MED_ACTIVE_COOLING, 30, NORMAL);
-}
-
-TEST_F(TypewiseAlertTest, MedActiveCooling_ToController_WhenTemperatureIsTooLow_ShouldReturnTooLow) {
-    testAlertForCoolingType(TO_CONTROLLER, MED_ACTIVE_COOLING, -1, TOO_LOW);
-}
-
-TEST_F(TypewiseAlertTest, MedActiveCooling_ToController_WhenTemperatureIsTooHigh_ShouldReturnTooHigh) {
-    testAlertForCoolingType(TO_CONTROLLER, MED_ACTIVE_COOLING, 41, TOO_HIGH);
-}
-
-TEST_F(TypewiseAlertTest, PassiveCooling_ToEmail_WhenTemperatureIsNormal_ShouldReturnNormal) {
+TEST_F(TypewiseAlertTest, PassiveCooling_ToEmail_NormalTemperature) {
     testAlertForCoolingType(TO_EMAIL, PASSIVE_COOLING, 20, NORMAL);
 }
 
-TEST_F(TypewiseAlertTest, PassiveCooling_ToEmail_WhenTemperatureIsTooLow_ShouldReturnTooLow) {
+TEST_F(TypewiseAlertTest, PassiveCooling_ToEmail_TooLowTemperature) {
     testAlertForCoolingType(TO_EMAIL, PASSIVE_COOLING, -1, TOO_LOW);
 }
 
-TEST_F(TypewiseAlertTest, PassiveCooling_ToEmail_WhenTemperatureIsTooHigh_ShouldReturnTooHigh) {
+TEST_F(TypewiseAlertTest, PassiveCooling_ToEmail_TooHighTemperature) {
     testAlertForCoolingType(TO_EMAIL, PASSIVE_COOLING, 36, TOO_HIGH);
 }
 
-TEST_F(TypewiseAlertTest, HiActiveCooling_ToEmail_WhenTemperatureIsNormal_ShouldReturnNormal) {
+// Test Cases for High Active Cooling
+TEST_F(TypewiseAlertTest, HiActiveCooling_ToController_NormalTemperature) {
+    testAlertForCoolingType(TO_CONTROLLER, HI_ACTIVE_COOLING, 30, NORMAL);
+}
+
+TEST_F(TypewiseAlertTest, HiActiveCooling_ToController_TooLowTemperature) {
+    testAlertForCoolingType(TO_CONTROLLER, HI_ACTIVE_COOLING, -1, TOO_LOW);
+}
+
+TEST_F(TypewiseAlertTest, HiActiveCooling_ToController_TooHighTemperature) {
+    testAlertForCoolingType(TO_CONTROLLER, HI_ACTIVE_COOLING, 46, TOO_HIGH);
+}
+
+TEST_F(TypewiseAlertTest, HiActiveCooling_ToEmail_NormalTemperature) {
     testAlertForCoolingType(TO_EMAIL, HI_ACTIVE_COOLING, 30, NORMAL);
 }
 
-TEST_F(TypewiseAlertTest, HiActiveCooling_ToEmail_WhenTemperatureIsTooLow_ShouldReturnTooLow) {
+TEST_F(TypewiseAlertTest, HiActiveCooling_ToEmail_TooLowTemperature) {
     testAlertForCoolingType(TO_EMAIL, HI_ACTIVE_COOLING, -1, TOO_LOW);
 }
 
-TEST_F(TypewiseAlertTest, HiActiveCooling_ToEmail_WhenTemperatureIsTooHigh_ShouldReturnTooHigh) {
+TEST_F(TypewiseAlertTest, HiActiveCooling_ToEmail_TooHighTemperature) {
     testAlertForCoolingType(TO_EMAIL, HI_ACTIVE_COOLING, 46, TOO_HIGH);
 }
 
-TEST_F(TypewiseAlertTest, MedActiveCooling_ToEmail_WhenTemperatureIsNormal_ShouldReturnNormal) {
+// Test Cases for Medium Active Cooling
+TEST_F(TypewiseAlertTest, MedActiveCooling_ToController_NormalTemperature) {
+    testAlertForCoolingType(TO_CONTROLLER, MED_ACTIVE_COOLING, 30, NORMAL);
+}
+
+TEST_F(TypewiseAlertTest, MedActiveCooling_ToController_TooLowTemperature) {
+    testAlertForCoolingType(TO_CONTROLLER, MED_ACTIVE_COOLING, -1, TOO_LOW);
+}
+
+TEST_F(TypewiseAlertTest, MedActiveCooling_ToController_TooHighTemperature) {
+    testAlertForCoolingType(TO_CONTROLLER, MED_ACTIVE_COOLING, 41, TOO_HIGH);
+}
+
+TEST_F(TypewiseAlertTest, MedActiveCooling_ToEmail_NormalTemperature) {
     testAlertForCoolingType(TO_EMAIL, MED_ACTIVE_COOLING, 30, NORMAL);
 }
 
-TEST_F(TypewiseAlertTest, MedActiveCooling_ToEmail_WhenTemperatureIsTooLow_ShouldReturnTooLow) {
+TEST_F(TypewiseAlertTest, MedActiveCooling_ToEmail_TooLowTemperature) {
     testAlertForCoolingType(TO_EMAIL, MED_ACTIVE_COOLING, -1, TOO_LOW);
 }
 
-TEST_F(TypewiseAlertTest, MedActiveCooling_ToEmail_WhenTemperatureIsTooHigh_ShouldReturnTooHigh) {
+TEST_F(TypewiseAlertTest, MedActiveCooling_ToEmail_TooHighTemperature) {
     testAlertForCoolingType(TO_EMAIL, MED_ACTIVE_COOLING, 41, TOO_HIGH);
 }
+
