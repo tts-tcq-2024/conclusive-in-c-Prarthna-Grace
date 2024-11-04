@@ -11,19 +11,33 @@ BreachType inferBreach(double value, double lowerLimit, double upperLimit) {
   return NORMAL;
 }
 
+// Functions to get temperature limits for each cooling type
+void setPassiveCoolingLimits(int &lowerLimit, int &upperLimit) {
+    lowerLimit = 0;
+    upperLimit = 35;
+}
+
+void setHiActiveCoolingLimits(int &lowerLimit, int &upperLimit) {
+    lowerLimit = 0;
+    upperLimit = 45;
+}
+
+void setMedActiveCoolingLimits(int &lowerLimit, int &upperLimit) {
+    lowerLimit = 0;
+    upperLimit = 40;
+}
+
+// Main function to determine temperature limits
 void getTemperatureLimits(CoolingType coolingType, int &lowerLimit, int &upperLimit) {
     switch (coolingType) {
         case PASSIVE_COOLING:
-            lowerLimit = 0;
-            upperLimit = 35;
+            setPassiveCoolingLimits(lowerLimit, upperLimit);
             break;
         case HI_ACTIVE_COOLING:
-            lowerLimit = 0;
-            upperLimit = 45;
+            setHiActiveCoolingLimits(lowerLimit, upperLimit);
             break;
         case MED_ACTIVE_COOLING:
-            lowerLimit = 0;
-            upperLimit = 40;
+            setMedActiveCoolingLimits(lowerLimit, upperLimit);
             break;
         default:
             // Set defaults or handle unknown cooling type if needed
