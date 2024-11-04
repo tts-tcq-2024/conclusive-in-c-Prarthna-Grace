@@ -18,7 +18,7 @@ void mockSendToEmail(BreachType breachType) {
     isEmailAlertCalled = true;
 }
 
-// Redirect function pointers to mock functions
+// Assign mock functions to function pointers
 void (*sendToControllerPtr)(BreachType) = mockSendToController;
 void (*sendToEmailPtr)(BreachType) = mockSendToEmail;
 
@@ -51,7 +51,6 @@ protected:
     }
 
     void validateControllerOutput(BreachType expectedBreach, const std::string& output) {
-        const unsigned short expectedHeader = 0xfeed;
         std::string expectedOutput = (expectedBreach == TOO_LOW) ? "feed : 1\n" :
                                      (expectedBreach == TOO_HIGH) ? "feed : 2\n" :
                                      "feed : 0\n";
@@ -59,7 +58,6 @@ protected:
     }
 
     void validateEmailOutput(BreachType expectedBreach, const std::string& output) {
-        const char* recipient = "a.b@c.com";
         std::string expectedOutput = (expectedBreach == TOO_LOW) ? "To: a.b@c.com\nHi, the temperature is too low\n" :
                                      (expectedBreach == TOO_HIGH) ? "To: a.b@c.com\nHi, the temperature is too high\n" :
                                      "";
