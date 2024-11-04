@@ -45,5 +45,9 @@ Think about guiding refactoring-work in your regular/project teams. Think of the
 You have seen a few workflows in this repository. They are quality-gates to prevent duplication, control complexity and prove functionality. Do you think some of them have potential to guide code-improvements in your team? yes
 
 During the next four weeks, what improvement do you plan in your code-quality practice? (in your regular work, not in this repository!)
-Ensure clean coding practices to reduce the complexity of the code, to increase the code ocverage and to build modularity in code. Will update the test spec and try out debugging techniques, to ensure the functionality of the code.
-
+I will focus on clean coding practices to enhance code quality and maintainability. Key actions include:
+    Reducing Complexity: Simplifying logic and breaking down complex functions for better understanding.
+    Increasing Code Coverage: Writing comprehensive tests to ensure all code paths are validated.
+    Enhancing Modularity: Creating reusable components that can be tested independently.
+    Employing Debugging Techniques: Utilizing effective debugging methods to resolve issues quickly.
+    Using Meaningful Names: Adopting clear variable and function names to improve readability.
