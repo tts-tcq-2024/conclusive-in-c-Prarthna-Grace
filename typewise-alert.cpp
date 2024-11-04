@@ -11,16 +11,6 @@ BreachType inferBreach(double value, double lowerLimit, double upperLimit) {
   return NORMAL;
 }
 
-BreachType classifyTemperatureBreach(CoolingType coolingType, double temperatureInC) {
-    int lowerLimit = 0;
-    int upperLimit = 0;
-
-    // Pass addresses of lowerLimit and upperLimit
-    getTemperatureLimits(coolingType, &lowerLimit, &upperLimit);
-
-    return inferBreach(temperatureInC, lowerLimit, upperLimit);
-}
-
 void getTemperatureLimits(CoolingType coolingType, int &lowerLimit, int &upperLimit) {
     switch (coolingType) {
         case PASSIVE_COOLING:
@@ -41,6 +31,16 @@ void getTemperatureLimits(CoolingType coolingType, int &lowerLimit, int &upperLi
             upperLimit = 0;
             break;
     }
+}
+
+BreachType classifyTemperatureBreach(CoolingType coolingType, double temperatureInC) {
+    int lowerLimit = 0;
+    int upperLimit = 0;
+
+    // Pass addresses of lowerLimit and upperLimit
+    getTemperatureLimits(coolingType, &lowerLimit, &upperLimit);
+
+    return inferBreach(temperatureInC, lowerLimit, upperLimit);
 }
 
 
