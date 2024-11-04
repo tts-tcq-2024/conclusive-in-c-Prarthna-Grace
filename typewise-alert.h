@@ -1,4 +1,7 @@
-#pragma once
+#ifndef TYPEWISE_ALERT_H
+#define TYPEWISE_ALERT_H
+
+#include <cstring> // Include for string manipulation if needed
 
 typedef enum {
   PASSIVE_COOLING,
@@ -19,14 +22,15 @@ typedef enum {
 
 typedef struct {
   CoolingType coolingType;
-  char brand[48];
+  char brand[48]; // Consider std::string in C++
 } BatteryCharacter;
 
+// Updated function signatures
 BreachType classifyTemperatureBreach(CoolingType coolingType, double temperatureInC);
 BreachType inferBreach(double value, double lowerLimit, double upperLimit);
-void getTemperatureLimits(CoolingType coolingType, int& lowerLimit, int& upperLimit);
+void getTemperatureLimits(CoolingType coolingType, int* lowerLimit, int* upperLimit); // Use pointers
 void checkAndAlert(AlertTarget alertTarget, BatteryCharacter batteryChar, double temperatureInC);
 void sendToController(BreachType breachType);
 void sendToEmail(BreachType breachType);
 
-
+#endif // TYPEWISE_ALERT_H
