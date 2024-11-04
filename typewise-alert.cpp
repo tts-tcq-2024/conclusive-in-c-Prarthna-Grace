@@ -27,23 +27,33 @@ void setMedActiveCoolingLimits(int &lowerLimit, int &upperLimit) {
     upperLimit = 40;
 }
 
-// Main function to determine temperature limits
-void getTemperatureLimits(CoolingType coolingType, int &lowerLimit, int &upperLimit) {
+// Function pointer type for setting limits
+typedef void (*SetLimitsFunc)(int &, int &);
+
+// Function to map CoolingType to corresponding limit-setting function
+SetLimitsFunc getLimitSetter(CoolingType coolingType) {
     switch (coolingType) {
         case PASSIVE_COOLING:
-            setPassiveCoolingLimits(lowerLimit, upperLimit);
-            break;
+            return setPassiveCoolingLimits;
         case HI_ACTIVE_COOLING:
-            setHiActiveCoolingLimits(lowerLimit, upperLimit);
-            break;
+            return setHiActiveCoolingLimits;
         case MED_ACTIVE_COOLING:
-            setMedActiveCoolingLimits(lowerLimit, upperLimit);
-            break;
+            return setMedActiveCoolingLimits;
         default:
-            // Set defaults or handle unknown cooling type if needed
-            lowerLimit = 0;
-            upperLimit = 0;
-            break;
+            return nullptr; // Handle unknown cooling type
+    }
+}
+
+// Main function to determine temperature limits
+void getTemperatureLimits(CoolingType coolingType, int &lowerLimit, int &upperLimit) {
+    SetLimitsFunc setLimits = getLimitSetter(coolingType);
+    
+    if (setLimits) {
+        setLimits(lowerLimit, upperLimit);
+    } else {
+        // Set defaults or handle unknown cooling type if needed
+        lowerLimit = 0;
+        upperLimit = 0;
     }
 }
 
